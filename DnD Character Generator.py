@@ -7,6 +7,30 @@ print ("D&D Character Generator\n\n")
 # You can choose a method to generate your character's ability scores:
 # 3d6 or 8+1d6
 
+class PlayerCharacter:
+    stats = {
+        "str" : "10",
+        "dex" : "10",
+        "con" : "10",
+        "int" : "10",
+        "wis" : "10",
+        "cha" : "10"
+    }
+
+    def __init__(self, name, race, level, str, dex, con, int, wis, cha): 
+        self.name = name
+        self.race = race
+        self.level = level
+        self.stats["str"] = str
+        self.stats["dex"] = dex
+        self.stats["con"] = con
+        self.stats["int"] = int
+        self.stats["wis"] = wis
+        self.stats["cha"] = cha
+
+        
+
+
 charName = str(input ("Enter a name for your character: \n\t"))
 
 dieMethod = int(input("Enter 1 for using 3d6.\nEnter 2 for using 8 + 1d6\nThe choice is yours: "))
