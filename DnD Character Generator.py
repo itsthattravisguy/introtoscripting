@@ -109,7 +109,40 @@ playerClasses = {
         "Weapon" : "Great Sword",
         "Base HP" : 10,
         "HP per Level": "1d10",
-        "Trained Skills" : ["Athletics"]
+        "Trained Skills" : ["Athletics"],
+        "Speed" : 30
+        },
+    "Rogue" : {
+        "Key Ability Score" : "Dexterity",
+        "Weapon" : "Dagger",
+        "Base HP" : 6,
+        "HP per Level": "1d6",
+        "Trained Skills" : ["Stealth"],
+        "Speed" : 30
+        },
+    "Paladin" : {
+        "Key Ability Score" : "Charisma",
+        "Weapon" : "Long Sword",
+        "Base HP" : 8,
+        "HP per Level": "1d8",
+        "Trained Skills" : ["Diplomacy"],
+        "Speed" : 25
+        },
+    "Cleric" : {
+        "Key Ability Score" : "Wisdom",
+        "Weapon" : "Mace",
+        "Base HP" : 8,
+        "HP per Level": "1d6",
+        "Trained Skills" : ["Religion"],
+        "Speed" : 20
+        },
+    "Wizard" : {
+        "Key Ability Score" : "Inteligence",
+        "Weapon" : "Staff",
+        "Base HP" : 4,
+        "HP per Level": "1d6",
+        "Trained Skills" : ["Arcana"],
+        "Speed" : 20
         }
     }
 
