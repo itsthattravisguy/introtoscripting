@@ -4,12 +4,13 @@ import random
 characterList = {}
 
 # commands
+'''
 exitcommands = ["exit", "close", "quit", "end"]
 helpcommands = ["help", "h"]
 listpccommands = ["List","list","list pcs", "list characters"]
 createPCcommands = ["1", "Create a PC", "make pc", "make character", "make char"]
 commands = [exitcommands, helpcommands, listpccommands, createPCcommands, "roll"]
-
+'''
 
 
 print ("\n\n-- Welcome to Travis' Character Generator --")
@@ -21,7 +22,6 @@ def d(dieSize):
     return result
 
 def roll(count, size, total=0,verbose=0):
-
 #    print("Rolling ", count, "d", size, "  - total = ",total, "  - verbose = ", verbose, sep="") #<-- Test Garbage
     i = 0
     result = 0
@@ -36,34 +36,33 @@ def roll(count, size, total=0,verbose=0):
         print ("\tYou rolled ", result," total.", sep="")
     return result 
 
-def requestName():
+def requestName(args=None):
     charName = str(input ("Enter a name for your character: \n\t"))
     return charName
 
-def createPC():
-    i = 0
+def createPC(args=None):
     charName = requestName()
-    while i == 0:
-        if charName == "Cancel":
-            break
-        elif charName in characterList:
-            print(charName, " is already taken by another character. Try again!", sep="")
-        else:
-            characterList[charName] = PlayerCharacter(charName)
-            characterList[charName].generateStats()
-            break
+    if (charName == "Cancel"):
+        pass
+    elif charName in characterList:
+        print(charName, " is already taken by another character. Try again!", sep="")
+    else:
+        characterList[charName] = PlayerCharacter(charName)
+        characterList[charName].generateStats()
+        characterList[charName].setRace()
     
 
-def listPCs():    
+def listPCs(args=None):    
     if len(characterList) < 1:
-        print("No Characters exist!")
+        print("\tNo Characters exist!")
     else:
-        print("Here is the list of created characters:\n")
+        print("Here is the list of created characters:\n\n\tName\t\tRace\n\t----\t\t----")
         for x in characterList:
-            print("\t",x,sep="")
+            print("\t",x,"\t\t",characterList[x].race,sep="")
         print("")
         
-def listCommands():
+        
+def listCommands(args=None):
     i = 0
     if len(commands) == 0:
         print("No commands exist. Travis is an idiot.")
@@ -74,30 +73,51 @@ def listCommands():
             print ("\t", commands[i])
             i += 1
 
+def listCommands2(args=None):
+    print("Here is the list of available commands:")
+    for x in commands1:
+        print("\n\t", end="")
+        print(*commands1[x]["aliases"],sep=", ", end="")
+        print("\n\t\t- ",commands1[x]["description"])
+              
+commands1 = {
+    "exit" : {
+        "aliases" : ["exit", "close", "quit", "end"],
+        "description" : "Closes the character generator.",
+        "function" : exit
+        },
+    "help" : {
+        "aliases" : ["help", "h", "commands"],
+        "description" : "Displays help text and available commands",
+        "function" : listCommands2
+        },
+    "list" : {
+        "aliases" : ["list", "pcs", "characters"],
+        "description" : "Displays a list of created characters",
+        "function" : listPCs
+        },
 
+#### Figuring out how to pass args better to this
+#    "roll" : {
+#        "aliases" : ["roll"],
+#        "description" : "Rolls dice in the 1d6 format. The example command 'roll 1d6' would roll one six sided die.",
+#        "function" : roll
+#        },
+    "createpc" : {
+        "aliases" : ["1","create a pc", "make pc", "make pc", "make character", "make char"],
+        "description" : "Starts the process of making a character.",
+        "function" : createPC
+        }    
+    }
 
                
 class PlayerCharacter:
-#    stats = {
-#        "str" : "10",
-#        "dex" : "10",
-#        "con" : "10",
-#        "int" : "10",
-#        "wis" : "10",
-#        "cha" : "10"
-#    }
 
     def __init__(self,name): 
         self.name = name
         self.stats = {}
-#        self.race = race
-#        self.level = level
-#        self.stats["str"] = str
-#        self.stats["dex"] = dex
-#        self.stats["con"] = con
-#        self.stats["int"] = int
-#        self.stats["wis"] = wis
-#        self.stats["cha"] = cha
+        self.race = "None"
+
 
     def generateStats(self):
         # select rolling method
@@ -114,11 +134,18 @@ class PlayerCharacter:
 
         elif dieMethod == 2:
             self.dieMethod1d6plus8()
+        else:
+            print("Invalid stat method selected")
     
         self.printStats()
-        reroll = str(input
+        reroll = str(input("Hit any key to continue."))
+        if reroll == "reroll":
+            print("Rerolling")
+            self.generateStats()
+            
+                     
 
-    def dieMethod3d6():
+    def dieMethod3d6(self):
         print ("Rolling 3d6 for each stat:\n")
         self.stats["str"] = roll(3,6)
         self.stats["dex"] = roll(3,6)
@@ -127,7 +154,7 @@ class PlayerCharacter:
         self.stats["wis"] = roll(3,6)
         self.stats["cha"] = roll(3,6)
 
-    def dieMethod1d6plus8():
+    def dieMethod1d6plus8(self):
         print ("Rolling 8 + 1d6 for each stat:\n")
         self.stats["str"] = roll(1,6) + 8
         self.stats["dex"] = roll(1,6) + 8
@@ -146,7 +173,7 @@ class PlayerCharacter:
         print("\tWisdom: \t", self.stats["wis"])
         print("\tCharisma: \t", self.stats["cha"])
 
-    def setRace():
+    def setRace(self):
         i = 0
         while i < 1:
             print("What ancestory would you like", self.name, "to be?:\n\t(1) Elf\n\t(2) Human\n\t(3) Orc")
@@ -168,32 +195,22 @@ class PlayerCharacter:
                 i = 1
             else:
                 print("That isnt in the list, try picking an ancestory again.")
-        print(self.name, "now has the following ancestory:", self.race, "\n", printStats())
+        print(self.name, "now has the following ancestory:", self.race, "\n", self.printStats())
 
 def main():
     running = 1
     while running == 1:
         command = str(input ("\nEnter a command:\n"))
+        args = None
+        if command.find(" ") != -1:
+            args = command[command.find(" "):]
+            command = command[:command.find(" ")]
+        command = command.casefold()
         print("")
-        if command in exitcommands:
-            running = 0
-        elif command in helpcommands:
-            listCommands()
-        elif command in listpccommands:
-            listPCs()
-        elif command in createPCcommands:
-            createPC()
-        elif command[:5] == "roll ":
-            try:
-                roll(int(command[5:command.find("d")]),int(command[command.find("d")+1:]),1,1)
-            except:
-                print("ERROR: Try using the format 'roll 1d6' to roll 1 die with 6 sides.")               
-                
-        elif command in commands:
-            if command == "":
-                print("incomplete logic")
-            else:
-                print("Error: WTF, Travis is dumb and this command isnt hooked up")
+        for x in commands1:
+            if command in commands1[x]["aliases"]:
+                commands1[x]["function"](args)
+                break
         else:
             print("Invalid command! (",command,")\n Try typing 'help' for a list of commands",sep="")
 
