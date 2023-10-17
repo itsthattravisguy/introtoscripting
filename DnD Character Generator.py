@@ -3,15 +3,6 @@ import random
 
 characterList = {}
 
-# commands
-'''
-exitcommands = ["exit", "close", "quit", "end"]
-helpcommands = ["help", "h"]
-listpccommands = ["List","list","list pcs", "list characters"]
-createPCcommands = ["1", "Create a PC", "make pc", "make character", "make char"]
-commands = [exitcommands, helpcommands, listpccommands, createPCcommands, "roll"]
-'''
-
 
 print ("\n\n-- Welcome to Travis' Character Generator --")
 
@@ -22,7 +13,7 @@ def d(dieSize):
     return result
 
 def roll(count, size, total=0,verbose=0):
-#    print("Rolling ", count, "d", size, "  - total = ",total, "  - verbose = ", verbose, sep="") #<-- Test Garbage
+    
     i = 0
     result = 0
     rolls = []
@@ -50,18 +41,19 @@ def createPC(args=None):
         characterList[charName] = PlayerCharacter(charName)
         characterList[charName].generateStats()
         characterList[charName].setRace()
+        characterList[charName].setClass()
     
 
 def listPCs(args=None):    
     if len(characterList) < 1:
         print("\tNo Characters exist!")
     else:
-        print("Here is the list of created characters:\n\n\tName\t\tRace\n\t----\t\t----")
+        print("Here is the list of created characters:\n\n\tName\t\tAncestory\tClass\n\t----\t\t---------\t-----")
         for x in characterList:
-            print("\t",x,"\t\t",characterList[x].race,sep="")
+            print("\t",x,"\t\t",characterList[x].race,"\t\t",characterList[x].charClass,sep="")
         print("")
         
-        
+'''        
 def listCommands(args=None):
     i = 0
     if len(commands) == 0:
@@ -72,15 +64,16 @@ def listCommands(args=None):
         while i < len(commands):
             print ("\t", commands[i])
             i += 1
+'''
 
-def listCommands2(args=None):
+def listCommands(args=None):
     print("Here is the list of available commands:")
-    for x in commands1:
+    for x in commands:
         print("\n\t", end="")
-        print(*commands1[x]["aliases"],sep=", ", end="")
-        print("\n\t\t- ",commands1[x]["description"])
+        print(*commands[x]["aliases"],sep=", ", end="")
+        print("\n\t\t- ",commands[x]["description"])
               
-commands1 = {
+commands = {
     "exit" : {
         "aliases" : ["exit", "close", "quit", "end"],
         "description" : "Closes the character generator.",
@@ -89,7 +82,7 @@ commands1 = {
     "help" : {
         "aliases" : ["help", "h", "commands"],
         "description" : "Displays help text and available commands",
-        "function" : listCommands2
+        "function" : listCommands
         },
     "list" : {
         "aliases" : ["list", "pcs", "characters"],
@@ -110,6 +103,46 @@ commands1 = {
         }    
     }
 
+playerClasses = {
+    "Warrior" : {
+        "Key Ability Score" : "Strength",
+        "Weapon" : "Great Sword",
+        "Base HP" : 10,
+        "HP per Level": "1d10",
+        "Trained Skills" : ["Athletics"]
+        }
+    }
+
+playerWeapons = {
+    "Great Sword" : {
+        "Damage" : "1d12",
+        "Damage Type" : "Slashing",
+        },
+    "Long Sword" : {
+        "Damage" : "1d8",
+        "Damage Type" : "Slashing",
+        },
+    "Dagger" : {
+        "Damage" : "1d4",
+        "Damage Type" : "Piercing",
+        },
+    "Mace" : {
+        "Damage" : "1d8",
+        "Damage Type" : "Bludgeoning",
+        },
+    "Fists" : {
+        "Damage" : "1d4",
+        "Damage Type" : "Bludgeoning",
+        },
+    "Bow" : {
+        "Damage" : "1d6",
+        "Damage Type" : "Piercing",
+        },
+    "Staff" : {
+        "Damage" : "1d4",
+        "Damage Type" : "Bludgeoning",
+        }
+    }
                
 class PlayerCharacter:
 
@@ -195,7 +228,37 @@ class PlayerCharacter:
                 i = 1
             else:
                 print("That isnt in the list, try picking an ancestory again.")
-        print(self.name, "now has the following ancestory:", self.race, "\n", self.printStats())
+        print("\n",self.name, " now has the following ancestory: ", self.race, "\n",sep="")
+        self.printStats()
+
+    def setTitle(self):
+        pass
+    
+    def setClass(self):
+        i = 1
+        availableClasses = []
+        print("\nPlease select one of the following classes:")     
+        for x in playerClasses.keys():
+            print("\t(",i,") ", x,sep="")
+            availableClasses.append(x)
+            i += 1
+        self.charClass = str(input("\t-> "))
+        if self.charClass.isnumeric():
+            try:
+                self.charClass = availableClasses[int(self.charClass)-1]
+            except:
+                print(self.charClass)
+                print(availableClasses)
+                print("\nNot a valid selection. Try again")
+                self.setClass()
+            else:
+                print(self.name, " is now a ", self.charClass, "!", sep="") 
+        else:  # Not a number, check the class list next
+            if self.charClass in playerClasses.keys():
+                print(self.name, " is now a ", self.charClass, "!", sep="")                   
+            else:
+                print("Thats not a valid character class, try again!")
+                self.setClass()
 
 def main():
     running = 1
@@ -207,9 +270,9 @@ def main():
             command = command[:command.find(" ")]
         command = command.casefold()
         print("")
-        for x in commands1:
-            if command in commands1[x]["aliases"]:
-                commands1[x]["function"](args)
+        for x in commands:
+            if command in commands[x]["aliases"]:
+                commands[x]["function"](args)
                 break
         else:
             print("Invalid command! (",command,")\n Try typing 'help' for a list of commands",sep="")
